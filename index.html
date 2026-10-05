@@ -1,0 +1,436 @@
+ <!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+<title>Lucky Casino Demo</title>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top, #3b0764, #090014 65%);
+    color: white;
+    min-height: 100vh;
+}
+header {
+    text-align: center;
+    padding: 25px 15px 15px;
+}
+header h1 {
+    font-size: 32px;
+}
+header p {
+    color: #d8b4fe;
+    margin-top: 5px;
+}
+.balance {
+    width: 92%;
+    max-width: 500px;
+    margin: 15px auto;
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.1);
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.2);
+}
+.balance span {
+    font-size: 30px;
+    font-weight: bold;
+}
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px;
+}
+.tabs button {
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 12px;
+    background: #4c1d95;
+    color: white;
+    font-size: 16px;
+}
+.tabs button.active {
+    background: #9333ea;
+}
+.game {
+    width: 92%;
+    max-width: 500px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.08);
+    text-align: center;
+}
+h2 {
+    margin-bottom: 20px;
+}
+.slots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px 0;
+}
+.slot {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 15px;
+    font-size: 45px;
+    color: black;
+}
+input {
+    width: 150px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+.play {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border: 0;
+    border-radius: 13px;
+    background: #22c55e;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+.play:active {
+    transform: scale(.97);
+}
+.result {
+    min-height: 35px;
+    margin-top: 18px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.dice {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+}
+.die {
+    width: 100px;
+    height: 100px;
+    background: white;
+    color: black;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+}
+.hidden {
+    display: none;
+}
+.stats {
+    margin-top: 20px;
+    line-height: 2;
+    color: #ddd;
+}
+.reset {
+    margin-top: 20px;
+    padding: 10px 18px;
+    border: 1px solid #aaa;
+    background: transparent;
+    color: white;
+    border-radius: 10px;
+}
+.notice {
+    width: 92%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+    font-size: 13px;
+    color: #aaa;
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>🎰 LUCKY CASINO</h1>
+    <p>Casino Demo — chỉ dùng tiền ảo</p>
+</header>
+<div class="balance">
+    💰 Số dư tiền ảo<br>
+    <span id="balance">10000</span> xu
+</div>
+<div class="tabs">
+    <button id="slotTab" class="active">
+        🎰 Slot
+    </button>
+    <button id="diceTab">
+        🎲 Xúc xắc
+    </button>
+</div>
+<!-- SLOT -->
+<div id="slotGame" class="game">
+    <h2>🎰 Máy Slot</h2>
+    <p>Đặt số xu muốn chơi</p>
+    <br>
+    <input
+        id="slotBet"
+        type="number"
+        value="100"
+        min="10"
+    >
+    <div class="slots">
+        <div class="slot" id="s1">🍒</div>
+        <div class="slot" id="s2">🍋</div>
+        <div class="slot" id="s3">⭐</div>
+    </div>
+    <button class="play" onclick="playSlot()">
+        🎰 QUAY
+    </button>
+    <div class="result" id="slotResult"></div>
+</div>
+<!-- DICE -->
+<div id="diceGame" class="game hidden">
+    <h2>🎲 Xúc xắc</h2>
+    <p>Chọn Tài hoặc Xỉu</p>
+    <br>
+    <input
+        id="diceBet"
+        type="number"
+        value="100"
+        min="10"
+    >
+    <div>
+        <button class="play"
+                style="margin-bottom:10px"
+                onclick="playDice('tai')">
+            🔴 TÀI
+        </button>
+        <button class="play"
+                onclick="playDice('xiu')">
+            🔵 XỈU
+        </button>
+    </div>
+    <div class="dice">
+        <div class="die" id="d1">⚀</div>
+        <div class="die" id="d2">⚀</div>
+    </div>
+    <div class="result" id="diceResult"></div>
+</div>
+<div class="stats">
+    🏆 Thắng:
+    <span id="wins">0</span>
+    <br>
+    ❌ Thua:
+    <span id="losses">0</span>
+    <br>
+    <button class="reset" onclick="resetGame()">
+        🔄 Reset game
+    </button>
+</div>
+<div class="notice">
+    ⚠️ Đây là trò chơi mô phỏng. Xu trong game không có giá trị tiền thật.
+    Không hỗ trợ nạp, rút hoặc quy đổi tiền.
+</div>
+<script>
+let balance =
+    Number(localStorage.getItem("casinoBalance"))
+    || 10000;
+let wins =
+    Number(localStorage.getItem("casinoWins"))
+    || 0;
+let losses =
+    Number(localStorage.getItem("casinoLosses"))
+    || 0;
+const symbols = [
+    "🍒",
+    "🍋",
+    "🍊",
+    "⭐",
+    "💎",
+    "7️⃣"
+];
+const diceSymbols = [
+    "⚀",
+    "⚁",
+    "⚂",
+    "⚃",
+    "⚄",
+    "⚅"
+];
+function updateUI() {
+    document.getElementById("balance")
+        .textContent = balance;
+    document.getElementById("wins")
+        .textContent = wins;
+    document.getElementById("losses")
+        .textContent = losses;
+    localStorage.setItem(
+        "casinoBalance",
+        balance
+    );
+    localStorage.setItem(
+        "casinoWins",
+        wins
+    );
+    localStorage.setItem(
+        "casinoLosses",
+        losses
+    );
+}
+function randomSymbol() {
+    return symbols[
+        Math.floor(
+            Math.random() * symbols.length
+        )
+    ];
+}
+function playSlot() {
+    let bet =
+        Number(
+            document.getElementById("slotBet").value
+        );
+    if (bet < 10) {
+        alert("Mức chơi tối thiểu là 10 xu.");
+        return;
+    }
+    if (bet > balance) {
+        alert("Bạn không đủ xu ảo.");
+        return;
+    }
+    balance -= bet;
+    let a = randomSymbol();
+    let b = randomSymbol();
+    let c = randomSymbol();
+    document.getElementById("s1")
+        .textContent = a;
+    document.getElementById("s2")
+        .textContent = b;
+    document.getElementById("s3")
+        .textContent = c;
+    let reward = 0;
+    if (a === b && b === c) {
+        reward = bet * 5;
+        wins++;
+        document.getElementById("slotResult")
+            .textContent =
+            "🎉 JACKPOT! +" +
+            reward +
+            " xu";
+    } else if (
+        a === b ||
+        b === c ||
+        a === c
+    ) {
+        reward = bet * 2;
+        wins++;
+        document.getElementById("slotResult")
+            .textContent =
+            "🔥 Hai biểu tượng giống nhau! +" +
+            reward +
+            " xu";
+    } else {
+        losses++;
+        document.getElementById("slotResult")
+            .textContent =
+            "😢 Không trúng. -" +
+            bet +
+            " xu";
+    }
+    balance += reward;
+    updateUI();
+}
+function playDice(choice) {
+    let bet =
+        Number(
+            document.getElementById("diceBet").value
+        );
+    if (bet < 10) {
+        alert("Mức chơi tối thiểu là 10 xu.");
+        return;
+    }
+    if (bet > balance) {
+        alert("Bạn không đủ xu ảo.");
+        return;
+    }
+    balance -= bet;
+    let d1 =
+        Math.floor(Math.random() * 6) + 1;
+    let d2 =
+        Math.floor(Math.random() * 6) + 1;
+    document.getElementById("d1")
+        .textContent = diceSymbols[d1 - 1];
+    document.getElementById("d2")
+        .textContent = diceSymbols[d2 - 1];
+    let total = d1 + d2;
+    let result =
+        total >= 7 ? "tai" : "xiu";
+    if (choice === result) {
+        let reward = bet * 2;
+        balance += reward;
+        wins++;
+        document.getElementById("diceResult")
+            .textContent =
+            "🎉 Bạn thắng! +" +
+            reward +
+            " xu — Tổng: " +
+            total;
+    } else {
+        losses++;
+        document.getElementById("diceResult")
+            .textContent =
+            "😢 Bạn thua — Tổng: " +
+            total;
+    }
+    updateUI();
+}
+function resetGame() {
+    if (
+        confirm(
+            "Bạn có chắc muốn reset game?"
+        )
+    ) {
+        balance = 10000;
+        wins = 0;
+        losses = 0;
+        updateUI();
+        document.getElementById("slotResult")
+            .textContent = "";
+        document.getElementById("diceResult")
+            .textContent = "";
+    }
+}
+document.getElementById("slotTab")
+    .onclick = function() {
+        document.getElementById("slotGame")
+            .classList.remove("hidden");
+        document.getElementById("diceGame")
+            .classList.add("hidden");
+        this.classList.add("active");
+        document.getElementById("diceTab")
+            .classList.remove("active");
+    };
+document.getElementById("diceTab")
+    .onclick = function() {
+        document.getElementById("diceGame")
+            .classList.remove("hidden");
+        document.getElementById("slotGame")
+            .classList.add("hidden");
+        this.classList.add("active");
+        document.getElementById("slotTab")
+            .classList.remove("active");
+    };
+updateUI();
+</script>
+</body>
+</html>
